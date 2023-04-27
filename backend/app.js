@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
-
 const userRoutes = require('./routes/user');
+const app = express();
 
 // connexion à la base de données mongoose atlas
 mongoose.connect('mongodb+srv://bno4:mongodbB307@cluster0.l2dcq84.mongodb.net/?retryWrites=true&w=majority',
@@ -22,5 +21,7 @@ app.use((req, res, next) => {
     next();
 });
 
+
 app.use('/api/auth', userRoutes);
+console.log(app);
 module.exports = app;

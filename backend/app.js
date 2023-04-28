@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const userRoutes = require('./routes/user');
 const app = express();
 
-// connexion à la base de données mongoose atlas
+// connexion à la base de données mongoose atlas !! EXTERNALISE VERS .env
 mongoose.connect('mongodb+srv://bno4:mongodbB307@cluster0.l2dcq84.mongodb.net/?retryWrites=true&w=majority',
     {
         useNewUrlParser: true,
@@ -23,5 +23,5 @@ app.use((req, res, next) => {
 
 
 app.use('/api/auth', userRoutes);
-console.log(app);
+
 module.exports = app;

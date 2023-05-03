@@ -1,7 +1,7 @@
 const express = require('express');
 // const bodyParser = require('body-parser');
 const path = require('path');
-
+// const cors = require('cors')
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
 const app = express();
@@ -9,6 +9,7 @@ const app = express();
 require('./models/Database');
 
 app.use(express.json());
+// app.use(cors());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

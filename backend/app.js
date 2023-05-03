@@ -2,19 +2,11 @@ const express = require('express');
 // const bodyParser = require('body-parser');
 const path = require('path');
 
-const mongoose = require('mongoose');
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
 const app = express();
 
-// connexion à la base de données mongoose atlas !! EXTERNALISE VERS .env
-mongoose.connect('mongodb+srv://bno4:mongodbB307@cluster0.l2dcq84.mongodb.net/?retryWrites=true&w=majority',
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => console.log('Connexion à MongoDB réussie !'))
-    .catch(() => console.log('Connexion à MongoDB échouée !'));
+require('./models/Database');
 
 app.use(express.json());
 
@@ -26,10 +18,10 @@ app.use((req, res, next) => {
 });
 
 // app.use(bodyParser.json());
-app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use('/api/sauces', saucesRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/api/sauces', saucesRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 module.exports = app;

@@ -1,15 +1,15 @@
 const express = require('express');
 const path = require('path');
-// const cors = require('cors')
+
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
+
 const app = express();
 
 // appel de la base de données depsui models
 require('./models/Database');
 
 app.use(express.json());
-// app.use(cors());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,7 +17,6 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
 });
-
 
 app.use('/api/auth', userRoutes);
 app.use('/api/sauces', saucesRoutes);

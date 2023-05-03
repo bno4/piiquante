@@ -74,3 +74,37 @@ exports.deleteSauce = (req, res, next) => {
             res.status(500).json({ error });
         });
 };
+
+// controlleur like/dilike route POST
+// bouton like
+exports.rateSauce = (req, res, next) => {
+    const like = req.body.like;
+    if (like === 1) {
+        Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId }, _id: req.params.id })
+            .then(() => res.status(200).json({ message: 'sauce likée' }))
+            .catch(error => res.status(400).json({ error }))
+        // bouton dislike
+    } else if (like === -1) {
+        Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId }, _id: req.params.id })
+            .then(() => res.status(200).json({ message: 'sauce unliked' }))
+            .catch(error => res.status(400).json({ error }))
+
+        // possibilité d'annuler un des choix de l'utilisateur
+    } else {
+        Sauce.findOne({ _id: req.params.id })
+            .then(sauce => {
+                if (sauce.usersLiked.indexOf(req.body.userId) !== -1) {
+                    Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId }, _id: req.params.id })
+                        .then(() => res.status(200).json({ message: 'sauce modifiée, suppression du like' }))
+                        .catch(error => res.status(400).json({ error }))
+                }
+
+                else if (sauce.usersDisliked.indexOf(req.body.userId) !== -1) {
+                    Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId }, _id: req.params.id })
+                        .then(() => res.status(200).json({ message: 'sauce modifiée, suppression du unlike' }))
+                        .catch(error => res.status(400).json({ error }))
+                }
+            })
+            .catch(error => res.status(400).json({ error }))
+    }
+};

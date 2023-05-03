@@ -1,11 +1,11 @@
 const express = require('express');
-// const bodyParser = require('body-parser');
 const path = require('path');
 // const cors = require('cors')
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
 const app = express();
 
+// appel de la base de données depsui models
 require('./models/Database');
 
 app.use(express.json());
@@ -18,10 +18,11 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.use(bodyParser.json());
 
 app.use('/api/auth', userRoutes);
 app.use('/api/sauces', saucesRoutes);
+
+// Chemin statique pour les images
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 

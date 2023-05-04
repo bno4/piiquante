@@ -78,29 +78,33 @@ exports.deleteSauce = (req, res, next) => {
 // controlleur like/dilike route POST
 // bouton like
 exports.rateSauce = (req, res, next) => {
+    const clientId = req.body.userId;
+    const chosenSauce = req.params.id;
     const like = req.body.like;
+
     if (like === 1) {
-        Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId }, _id: req.params.id })
+        // utilisation des opérateurs MongoDB : $pull(supprime), $inc(incrémente), $push(ajoute les données) pour modifier les tableau dans MOngoDB
+        Sauce.updateOne({ _id: chosenSauce }, { $inc: { likes: 1 }, $push: { usersLiked: clientId }, _id: chosenSauce })
             .then(() => res.status(200).json({ message: 'sauce likée' }))
             .catch(error => res.status(400).json({ error }))
         // bouton dislike
     } else if (like === -1) {
-        Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId }, _id: req.params.id })
+        Sauce.updateOne({ _id: chosenSauce }, { $inc: { dislikes: 1 }, $push: { usersDisliked: clientId }, _id: chosenSauce })
             .then(() => res.status(200).json({ message: 'sauce unliked' }))
             .catch(error => res.status(400).json({ error }))
 
         // possibilité d'annuler un des choix de l'utilisateur
     } else {
-        Sauce.findOne({ _id: req.params.id })
+        Sauce.findOne({ _id: chosenSauce })
             .then(sauce => {
-                if (sauce.usersLiked.indexOf(req.body.userId) !== -1) {
-                    Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId }, _id: req.params.id })
+                if (sauce.usersLiked.indexOf(clientId) !== -1) {
+                    Sauce.updateOne({ _id: chosenSauce }, { $inc: { likes: -1 }, $pull: { usersLiked: clientId }, _id: chosenSauce })
                         .then(() => res.status(200).json({ message: 'sauce modifiée, suppression du like' }))
                         .catch(error => res.status(400).json({ error }))
                 }
 
-                else if (sauce.usersDisliked.indexOf(req.body.userId) !== -1) {
-                    Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId }, _id: req.params.id })
+                else if (sauce.usersDisliked.indexOf(clientId) !== -1) {
+                    Sauce.updateOne({ _id: chosenSauce }, { $inc: { dislikes: -1 }, $pull: { usersDisliked: clientId }, _id: chosenSauce })
                         .then(() => res.status(200).json({ message: 'sauce modifiée, suppression du unlike' }))
                         .catch(error => res.status(400).json({ error }))
                 }

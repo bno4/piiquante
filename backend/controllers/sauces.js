@@ -2,7 +2,7 @@ const Sauce = require('../models/Sauce');
 // import du package file system pour suppression d'une sauce
 const fs = require('fs');
 
-// controlleur GET (affiche TOUTES les sauces)
+// controlleur GET (affiche TOUTES les sauces) // ajouter req.protocol pour balayer les URL avant d'envoyer au front
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
         .then(sauces => res.status(200).json(sauces))
@@ -34,24 +34,29 @@ exports.createSauce = (req, res, next) => {
 
 // controlleur route PUT => modifie une sauce
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ? {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
-    delete sauceObject._userId;
-    Sauce.findOne({ _id: req.params.id })
-        .then((sauce) => {
-            if (sauce.userId != req.auth.userId) {
-                res.status(401).json({ message: 'Non-autorisé' });
-            } else {
-                Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Objet modifié !' }))
-                    .catch((error) => { res.status(401).json({ error }) })
-            }
-        })
-        .catch((error) => {
-            res.status(400).json({ error });
-        })
+    const sauceObject = req.file
+        ? {
+            ...JSON.parse(req.body.sauce),
+            imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+        }
+        : { ...req.body };
+    if (req.file) {
+        Sauce.findOne({ _id: req.params.id })
+            .then((sauce) => {
+                const filename = sauce.imageUrl.split("images/")[1]; // sélection de l'image qui va être effacée
+                // suppression de l'image qui sera remplacée
+                fs.unlink(`images/${filename}`, (error) => {
+                    if (error) console.log(error);
+                });
+            })
+            .catch((error) => res.status(500).json({ error }));
+    }
+    Sauce.updateOne(
+        { _id: req.params.id },
+        { ...sauceObject, _id: req.params.id }
+    )
+        .then(() => res.status(200).json({ message: "Objet modifié !" }))
+        .catch((error) => res.status(400).json({ error }));
 };
 
 // controlleur route DELETE => Supprime une sauce

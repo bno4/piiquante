@@ -21,7 +21,8 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-    User.findOne({ email: req.body.email })
+    const emailCryptoJs = cryptoJs.HmacSHA256(req.body.email, "SECRET_KEY").toString();
+    User.findOne({ email: emailCryptoJs })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ error: 'Utilisateur non trouvé !' });

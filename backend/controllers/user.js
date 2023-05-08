@@ -1,12 +1,14 @@
+// cryptage du mot de passe utilisateur (protection base de données, cf. RGPD)
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+// cryptage du mail utilisateur (protection base de données, cf. RGPD)
 const cryptoJs = require('crypto-js');
 const User = require('../models/User');
 require('dotenv').config();
 
-
+// fonction d'inscription et cryptage du mot de passe et email)
 exports.signup = (req, res, next) => {
-    const emailCryptoJs = cryptoJs.HmacSHA256(req.body.email, "SECRET_KEY").toString();
+    const emailCryptoJs = cryptoJs.HmacSHA256(req.body.email, process.env.EMAIL_KEY).toString();
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
@@ -20,8 +22,9 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
+// fonction de connexion et cryptage du mot de passe et email)
 exports.login = (req, res, next) => {
-    const emailCryptoJs = cryptoJs.HmacSHA256(req.body.email, "SECRET_KEY").toString();
+    const emailCryptoJs = cryptoJs.HmacSHA256(req.body.email, process.env.EMAIL_KEY).toString();
     User.findOne({ email: emailCryptoJs })
         .then(user => {
             if (!user) {

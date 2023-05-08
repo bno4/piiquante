@@ -43,8 +43,8 @@ exports.modifySauce = (req, res, next) => {
     if (req.file) {
         Sauce.findOne({ _id: req.params.id })
             .then((sauce) => {
-                const filename = sauce.imageUrl.split("images/")[1]; // sélection de l'image qui va être effacée
-                // suppression de l'image qui sera remplacée
+                const filename = sauce.imageUrl.split("images/")[1];
+                // suppression de l'image de la sauce qui sera remplacée
                 fs.unlink(`images/${filename}`, (error) => {
                     if (error) console.log(error);
                 });

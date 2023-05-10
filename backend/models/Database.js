@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 // import de l'URI complète de la base de données (id user + mot de passe)
-require('dotenv').config();
 
 mongoose.connect(process.env.MONGO_URI,
     {

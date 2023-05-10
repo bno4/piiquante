@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 // cryptage du mail utilisateur (protection base de données, cf. RGPD)
 const cryptoJs = require('crypto-js');
 const User = require('../models/User');
-require('dotenv').config();
 
 // fonction d'inscription et cryptage du mot de passe et email)
 exports.signup = (req, res, next) => {

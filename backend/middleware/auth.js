@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 // import de la clé Token depuis .env
-require('dotenv').config();
+
 
 module.exports = (req, res, next) => {
     try {
